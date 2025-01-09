@@ -1,6 +1,7 @@
 package repl
 
 import (
+	"Go_Interpreter/evaluator"
 	"Go_Interpreter/lexer"
 	"Go_Interpreter/parser"
 	"bufio"
@@ -26,8 +27,11 @@ func Start(in io.Reader, out io.Writer) {
 			printParserErrors(out, p.Errors())
 			continue
 		}
-		io.WriteString(out, program.String())
-		io.WriteString(out, "\n")
+		evaluated := evaluator.Eval(program)
+		if evaluated != nil {
+			io.WriteString(out, evaluated.Inspect())
+			io.WriteString(out, "\n")
+		}
 	}
 }
 
@@ -36,12 +40,12 @@ const MONKEY_FACE = `            __,__
  / .. \/  .-. .-.  \/ .. \
 | |  '|  /   Y   \  |'  | |
 | \   \  \ 0 | 0 /  /   / |
- \ '- ,\.-"""""""-./, -' /
+\ '- ,\.-"""""""-./, -' /
   ''-' /_   ^ ^   _\ '-''
-	  |  \._   _./  |
-	  \   \ '~' /   /
-	   '._ '-=-' _.'
-		  '-----'
+      |  \._   _./  |
+      \   \ '~' /   /
+       '._ '-=-' _.'
+          '-----'
 `
 
 func printParserErrors(out io.Writer, errors []string) {
